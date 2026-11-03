@@ -11,6 +11,20 @@ class Booking(StatesGroup):
     confirm = State()
 
 
+class Review(StatesGroup):
+    comment = State()
+
+
 class Broadcast(StatesGroup):
     text = State()
     confirm = State()
+
+
+class AdminForm(StatesGroup):
+    service_name = State()
+    service_price = State()
+    service_duration = State()
+    service_description = State()
+    service_new_price = State()
+    master_name = State()
+    master_description = State()

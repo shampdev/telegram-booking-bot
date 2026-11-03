@@ -13,7 +13,7 @@ from config import load_config
 from database import Database
 from filters import IsAdmin
 from handlers import admin, user
-from utils.reminders import reminder_loop
+from utils.reminders import background_loop
 
 logger = logging.getLogger(__name__)
 
@@ -51,14 +51,14 @@ async def main() -> None:
     admin.router.callback_query.filter(IsAdmin(config.admin_ids))
     dp.include_routers(admin.router, user.router)  # порядок важен: в user есть «ловушка» для всего остального
 
-    reminders = asyncio.create_task(reminder_loop(bot, db, config))
+    background = asyncio.create_task(background_loop(bot, db, config))
     try:
         await set_commands(bot, config.admin_ids)
         await bot.delete_webhook(drop_pending_updates=True)
         logger.info("Бот запущен")
         await dp.start_polling(bot)
     finally:
-        reminders.cancel()
+        background.cancel()
         await db.close()
         await bot.session.close()
 
